@@ -1,14 +1,17 @@
 # syntax=docker/dockerfile:1
 FROM node:20-alpine AS base
 WORKDIR /app
-ENV NODE_ENV=production
 
 FROM base AS deps
-RUN apk add --no-cache python3 make g++
+ENV NODE_ENV=development
+RUN apk add --no-cache python3 make g++ openssl
 COPY package.json package-lock.json ./
 RUN npm ci
 
 FROM deps AS build
+ENV NODE_ENV=production
+ENV DATABASE_URL=file:./data/dev.db
+ENV MEDIA_STORAGE_DIR=/app/data/uploads
 COPY . .
 RUN npm run prisma:generate
 RUN npx prisma migrate deploy
