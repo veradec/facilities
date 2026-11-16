@@ -71,6 +71,21 @@ npm run typecheck
 npm run lint
 ```
 
+## Docker
+
+Build and run the app in a container. Provide `.env` at runtime (it is not committed).
+
+```bash
+docker build -t facilities .
+docker run -p 3000:3000 --env-file .env facilities
+```
+
+Open http://localhost:3000. The container runs Prisma migrations and seeds on startup, then starts the Next.js server. SQLite data and uploads live under `/app/data` in the container; mount a volume to persist them:
+
+```bash
+docker run -p 3000:3000 --env-file .env -v facilities-data:/app/data facilities
+```
+
 ## Security notes
 - Do not commit `.env` or `uploads/`.
 - Uploaded/unapproved media is never publicly served; approval required for public access.
