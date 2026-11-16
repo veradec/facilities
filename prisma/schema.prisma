@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  createdAt    DateTime     @default(now())
+  reviews      Submission[] @relation("ReviewedBy")
+}
+
+model Submission {
+  id                 String            @id @default(cuid())
+  name               String
+  type               String
+  description        String
+  accessibility      String?
+  latitude           Float
+  longitude          Float
+  status             String   @default("PENDING")
+  submittedAt        DateTime          @default(now())
+  reviewedAt         DateTime?
+  reviewedById       String?
+  reviewedBy         AdminUser?        @relation("ReviewedBy", fields: [reviewedById], references: [id])
+  rejectionReason    String?
+  internalNote       String?
+  contactName        String?
+  contactEmail       String?
+  contactPhone       String?
+  contactVisibility  String @default("PRIVATE")
+  media              Media[]
+
+  @@index([status, submittedAt])
+  @@index([type])
+}
+
+model Media {
+  id           String     @id @default(cuid())
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  kind         String
+  originalName String
+  mimeType     String
+  sizeBytes    Int
+  storagePath  String
+  isPublic     Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+
+  @@index([submissionId])
+}

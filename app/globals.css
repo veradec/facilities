@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "leaflet/dist/leaflet.css";
+
+:root { color-scheme: light; }
+body { @apply bg-slate-50 text-slate-900; }
+a { @apply underline-offset-2; }
+:focus-visible { @apply outline-2 outline-offset-2 outline-brand-600; }
